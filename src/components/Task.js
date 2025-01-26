@@ -1,13 +1,12 @@
 import React from "react";
 
-function Task() {
+const Task = ({ text, category }) => {
   return (
-    <div className="task">
-      <div className="label">CATEGORY HERE</div>
-      <div className="text">TEXT HERE</div>
-      <button className="delete">X</button>
+    <div data-testid="task" className="task">
+      <p>{text}</p>
+      <span>{category}</span>
     </div>
   );
-}
+};
 
 export default Task;

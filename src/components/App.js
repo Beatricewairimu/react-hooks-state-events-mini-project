@@ -1,19 +1,27 @@
-import React from "react";
-import CategoryFilter from "./CategoryFilter";
-import NewTaskForm from "./NewTaskForm";
-import TaskList from "./TaskList";
-
-import { CATEGORIES, TASKS } from "../data";
-console.log("Here's the data you're working with");
-console.log({ CATEGORIES, TASKS });
+import React, { useState } from 'react';
+import Task from './Task';
 
 function App() {
+  const [tasks, setTasks] = useState([
+    { text: 'Buy rice', category: 'Food' },
+    { text: 'Save a tenner', category: 'Money' },
+    { text: 'Build a todo app', category: 'Code' },
+  ]);
+
+  const handleDelete = (textToDelete) => {
+    setTasks((prevTasks) => prevTasks.filter(task => task.text !== textToDelete));
+  };
+
   return (
-    <div className="App">
-      <h2>My tasks</h2>
-      <CategoryFilter />
-      <NewTaskForm />
-      <TaskList />
+    <div>
+      {tasks.map((task) => (
+        <Task
+          key={task.text}
+          text={task.text}
+          category={task.category}
+          onDelete={() => handleDelete(task.text)}
+        />
+      ))}
     </div>
   );
 }

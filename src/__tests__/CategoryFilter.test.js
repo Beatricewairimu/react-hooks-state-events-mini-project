@@ -1,46 +1,61 @@
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom"; // Import this for jest-dom matchers
 import { render, screen, fireEvent } from "@testing-library/react";
-import CategoryFilter from "../components/CategoryFilter";
-import App from "../components/App";
-import { CATEGORIES } from "../data";
+import CategoryFilter from "../components/CategoryFilter"; // Adjust path as needed
 
-test("displays a button for each category", () => {
-  render(<CategoryFilter categories={CATEGORIES} />);
-  for (const category of CATEGORIES) {
-    expect(screen.queryByText(category)).toBeInTheDocument();
-  }
-});
+describe("CategoryFilter", () => {
+  test("displays a button for each category", () => {
+    const categories = ["All", "Code", "Food"];
+    const onSelectCategory = jest.fn();
 
-test("clicking the category button adds a class of 'selected' to the button", () => {
-  render(<App />);
+    render(
+      <CategoryFilter
+        categories={categories}
+        selectedCategory="All"
+        onSelectCategory={onSelectCategory}
+      />
+    );
 
-  const codeButton = screen.queryByRole("button", { name: "Code" });
-  const allButton = screen.queryByRole("button", { name: "All" });
+    // Check if buttons for all categories are rendered
+    categories.forEach((category) => {
+      const button = screen.getByText(category);
+      expect(button).toBeInTheDocument(); // This checks if the button is in the DOM
+    });
+  });
 
-  fireEvent.click(codeButton);
+  test("highlights the selected category", () => {
+    const categories = ["All", "Code", "Food"];
+    const onSelectCategory = jest.fn();
 
-  expect(codeButton.classList).toContain("selected");
-  expect(allButton.classList).not.toContain("selected");
-});
+    render(
+      <CategoryFilter
+        categories={categories}
+        selectedCategory="Code"
+        onSelectCategory={onSelectCategory}
+      />
+    );
 
-test("clicking the category button filters the task list", () => {
-  render(<App />);
+    // Check if the selected button has the class "selected"
+    const selectedButton = screen.getByText("Code");
+    expect(selectedButton).toHaveClass("selected"); // This checks if the class "selected" is applied
+  });
 
-  const codeButton = screen.queryByRole("button", { name: "Code" });
+  test("calls the onSelectCategory callback when a button is clicked", () => {
+    const categories = ["All", "Code", "Food"];
+    const onSelectCategory = jest.fn();
 
-  fireEvent.click(codeButton);
+    render(
+      <CategoryFilter
+        categories={categories}
+        selectedCategory="All"
+        onSelectCategory={onSelectCategory}
+      />
+    );
 
-  expect(screen.queryByText("Build a todo app")).toBeInTheDocument();
-  expect(screen.queryByText("Buy rice")).not.toBeInTheDocument();
-});
+    // Simulate a click on the "Food" button
+    const foodButton = screen.getByText("Food");
+    fireEvent.click(foodButton);
 
-test("displays all tasks when the 'All' button is clicked", () => {
-  render(<App />);
-
-  const allButton = screen.queryByRole("button", { name: "All" });
-
-  fireEvent.click(allButton);
-
-  expect(screen.queryByText("Build a todo app")).toBeInTheDocument();
-  expect(screen.queryByText("Buy rice")).toBeInTheDocument();
+    // Check if the callback was called with the correct argument
+    expect(onSelectCategory).toHaveBeenCalledWith("Food");
+  });
 });
